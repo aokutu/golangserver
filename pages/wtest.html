@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <p id="output">Waiting for message...</p>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8080/websocket");
+
+        ws.onopen = function() {
+            console.log("Connected");
+        };
+
+        ws.onmessage = function(event) {
+            document.getElementById("output").innerText = event.data;
+        };
+
+        ws.onerror = function(error) {
+            console.log("Error:", error);
+        };
+
+        ws.onclose = function() {
+            console.log("Disconnected");
+        };
+    </script>
+</body>
+</html>
