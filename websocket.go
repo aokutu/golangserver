@@ -11,10 +11,45 @@ import (
 ///////shift http -> ws ////////
 
 var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+    ReadBufferSize:  1024,
+    WriteBufferSize: 1024,
+    CheckOrigin: func(r *http.Request) bool {
+        return true
+    },
 }
 ////////////////////
+
+
+
+func SendTime(conn *websocket.Conn ){
+		// Send time every second
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		now := time.Now().Format("15:04:05")
+		err := conn.WriteMessage(websocket.TextMessage, []byte(now))
+		if err != nil {
+			log.Println("Client disconnected:", err)
+			return
+		}
+	}
+
+
+}
+
+
+func ReadClient(conn *websocket.Conn) {
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("Client disconnected:", err)
+			return
+		}
+		log.Printf("Client said: %s", message)
+	}
+}
+
 
 func main() {
 
@@ -28,18 +63,9 @@ func main() {
 	}
 	defer conn.Close()
 
-	// Send time every second
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
+go SendTime(conn)
+ReadClient(conn)
 
-	for range ticker.C {
-		now := time.Now().Format("15:04:05")
-		err := conn.WriteMessage(websocket.TextMessage, []byte(now))
-		if err != nil {
-			log.Println("Client disconnected:", err)
-			return
-		}
-	}
 }) 
 
 
