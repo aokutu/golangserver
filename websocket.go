@@ -51,10 +51,48 @@ func ReadClient(conn *websocket.Conn) {
 }
 
 
+func ReadChat(conn *websocket.Conn) {
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("Client disconnected:", err)
+			return
+		}
+		log.Printf("CHAT SAID : %s", message)
+
+
+		err = conn.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+   			 log.Println("Write failed:", err)
+   		 return
+}
+
+
+	}
+}
+
+
+func ChatHandler(w http.ResponseWriter, r *http.Request) {
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Upgrade failed:", err)
+		return
+	}
+
+	defer conn.Close()
+
+	log.Println("Chat endpoint hit")
+
+	ReadChat(conn)
+}
+
+
+
 func main() {
 
 
-
+http.HandleFunc("/chats", ChatHandler)
    http.HandleFunc("/websocket", func(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

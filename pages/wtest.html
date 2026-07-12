@@ -12,6 +12,7 @@
 
         ws.onopen = function() {
             console.log("Connected");
+             document.getElementById("output").innerText = "CONNECTED ";
         };
 
         ws.onmessage = function(event) {
@@ -25,6 +26,15 @@
         ws.onclose = function() {
             console.log("Disconnected");
         };
+
+        ws.send("Hello Server");
+
+        
     </script>
+    <div>  CHAT MESSAGES </div>
+    <input type="text" name="chat">
+    <button>SUND</button>
 </body>
 </html>
+
+
